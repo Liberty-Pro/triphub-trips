@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Trip Hub — open your trip</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+       max-width: 520px; margin: 0 auto; padding: 40px 20px 60px; line-height: 1.55; color: #1a1a1a; background: #f6f7f9; }
+.card { background: #fff; border: 1px solid #e3e6ea; border-radius: 16px; padding: 24px 20px; }
+h1 { font-size: 24px; margin: 0 0 6px; }
+p { margin: 0 0 14px; }
+.muted { color: #5f6670; font-size: 14px; }
+.btn { display: block; text-align: center; text-decoration: none; font-weight: 700; font-size: 17px;
+       border-radius: 12px; padding: 14px 16px; margin: 18px 0 10px; }
+.primary { background: #1f6feb; color: #fff; }
+.ghost { background: #fff; color: #1f6feb; border: 1px solid #1f6feb; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Your trip is ready</h1>
+
+  <div id="android" class="hidden">
+    <p>Tap below to load it into Trip Hub.</p>
+    <a id="open" class="btn primary" href="#">Open in Trip Hub</a>
+    <p class="muted">Don't have Trip Hub yet? <a href="https://play.google.com/store/apps/details?id=com.libertyindicators.triphub">Get it on Google Play</a>, then come back to this page and tap Open in Trip Hub again. Or open Trip Hub, tap <b>Scan trip code</b> and scan the code again.</p>
+  </div>
+
+  <div id="other" class="hidden">
+    <p>Trip Hub is an Android app. Open this link, or scan the trip code, on your Android phone.</p>
+  </div>
+
+  <div id="nocode" class="hidden">
+    <p>This page opens trips in the Trip Hub app. Your travel agent's trip code or link brings you here with your trip attached.</p>
+    <p class="muted">If you followed a link, it may have been cut short. Try scanning the code instead, from Trip Hub: <b>Scan trip code</b>.</p>
+  </div>
+
+  <p class="muted">Your trip details are encrypted. The code after the # in this link is the only key, and this page never sends it anywhere.</p>
+</div>
+<script>
+(function () {
+  var params = new URLSearchParams(location.hash.slice(1));
+  var t = params.get("t") || "", k = params.get("k") || "";
+  var valid = /^[A-Za-z0-9_-]{16,32}$/.test(t) && /^[A-Za-z0-9_-]{43}$/.test(k);
+  var show = function (id) { document.getElementById(id).classList.remove("hidden"); };
+  if (!valid) { show("nocode"); return; }
+  if (!/Android/i.test(navigator.userAgent)) { show("other"); return; }
+  // An Android intent link: opens Trip Hub with the code, or its Play page when it isn't installed.
+  // It's handled on the phone; nothing here goes over the network.
+  document.getElementById("open").href = "intent://load?t=" + t + "&k=" + k +
+    "#Intent;scheme=triphub;package=com.libertyindicators.triphub;end";
+  show("android");
+})();
+</script>
+</body>
+</html>
